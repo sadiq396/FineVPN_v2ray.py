@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>FineVPN_v2ray | عیب‌یابی پنل</title>
+<style>
+  :root{
+    --neon: #4dd0ff;
+    --neon2: #b47aff;
+    --gold: #ffd54a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    color:#e8f4ff;
+    font:15px/1.7 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+    background:#05070f;
+    position:relative;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* ====== پس‌زمینه زنده: شبکه سه‌بعدی + aurora ====== */
+  #bg{
+    position:fixed; inset:0;
+    z-index:-3;
+    background:
+      radial-gradient(60% 50% at 20% 20%, rgba(77,208,255,.22), transparent 70%),
+      radial-gradient(55% 50% at 85% 25%, rgba(180,122,255,.22), transparent 70%),
+      radial-gradient(60% 55% at 50% 90%, rgba(0,200,180,.18), transparent 70%),
+      radial-gradient(45% 45% at 10% 85%, rgba(255,90,160,.18), transparent 70%),
+      linear-gradient(180deg,#05070f,#080b1a 60%,#05070f);
+    animation: auraShift 24s ease-in-out infinite alternate;
+  }
+  @keyframes auraShift{
+    0%  { filter: hue-rotate(0deg)   brightness(1); }
+    50% { filter: hue-rotate(18deg)  brightness(1.08); }
+    100%{ filter: hue-rotate(-15deg) brightness(1); }
+  }
+  #grid{
+    position:fixed; inset:0;
+    z-index:-2;
+    background-image:
+      linear-gradient(rgba(77,208,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,208,255,.06) 1px, transparent 1px);
+    background-size: 44px 44px, 44px 44px;
+    mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 30%, transparent 80%);
+  }
+  #mesh{
+    position:fixed; inset:0;
+    z-index:-1;
+    pointer-events:none;
+  }
+  #mesh canvas{ display:block; width:100%; height:100%; opacity:.85; }
+
+  .w{max-width:680px;margin:0 auto;padding:26px 18px 46px}
+
+  /* ====== باکس برند (لوگو + عنوان) ====== */
+  .brand{
+    display:flex; align-items:center; gap:16px;
+    padding:16px 18px; margin:0 0 16px;
+    border-radius:20px;
+    background: linear-gradient(135deg, rgba(77,208,255,.10), rgba(180,122,255,.06) 60%, rgba(255,255,255,.03));
+    border:1px solid rgba(77,208,255,.35);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    box-shadow:
+      0 10px 40px rgba(0,0,0,.55),
+      0 0 30px rgba(77,208,255,.22),
+      inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  .brand .logo{
+    position:relative;
+    width:64px;height:64px;flex:none;
+    border-radius:50%;
+    display:grid; place-items:center;
+  }
+  .brand .logo::before{
+    content:"";
+    position:absolute; inset:-6px;
+    border-radius:50%;
+    background: conic-gradient(from 0deg, var(--neon), var(--neon2), var(--neon));
+    filter: blur(10px);
+    opacity:.75;
+    animation: spin 8s linear infinite;
+  }
+  .brand .logo img{
+    position:relative;
+    width:64px;height:64px;object-fit:cover;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.35);
+    box-shadow:
+      0 0 0 2px rgba(77,208,255,.5),
+      0 0 24px rgba(77,208,255,.85),
+      0 0 44px rgba(180,122,255,.55),
+      inset 0 0 20px rgba(0,0,0,.5);
+    background:#05070f;
+    animation: pulse 3.6s ease-in-out infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg) } }
+  @keyframes pulse{
+    0%,100%{ box-shadow: 0 0 0 2px rgba(77,208,255,.5), 0 0 22px rgba(77,208,255,.75), 0 0 40px rgba(180,122,255,.45), inset 0 0 20px rgba(0,0,0,.5); }
+    50%    { box-shadow: 0 0 0 2px rgba(77,208,255,.8), 0 0 34px rgba(77,208,255,1),  0 0 60px rgba(180,122,255,.7),  inset 0 0 20px rgba(0,0,0,.5); }
+  }
+
+  /* ====== متن‌های نورانی ====== */
+  h1{
+    font-size:19px;margin:0;
+    color:#e8f4ff;
+    text-shadow:
+      0 0 8px  rgba(77,208,255,.9),
+      0 0 20px rgba(77,208,255,.65),
+      0 0 42px rgba(180,122,255,.5);
+    letter-spacing:.3px;
+  }
+  p.s{
+    margin:0 0 16px;color:#bcd7ff;font-size:13px;padding:0 4px;
+    text-shadow: 0 0 8px rgba(77,208,255,.35);
+  }
+
+  /* ====== ردیف‌های وضعیت (شیشه‌ای) ====== */
+  .r{
+    display:flex;justify-content:space-between;gap:10px;
+    padding:11px 14px;margin:8px 0;
+    border-radius:14px;
+    background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow:
+      0 4px 18px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.2);
+    direction:ltr;font-size:13px;word-break:break-all;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .r:hover{
+    transform: translateY(-1px);
+    box-shadow:
+      0 8px 26px rgba(0,0,0,.5),
+      0 0 22px rgba(77,208,255,.25),
+      inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  .r b{flex:none}
+  .ok  { color:#5effc8; text-shadow: 0 0 10px rgba(94,255,200,.85), 0 0 24px rgba(94,255,200,.5); }
+  .bad { color:#ff7a7a; text-shadow: 0 0 10px rgba(255,122,122,.85), 0 0 24px rgba(255,122,122,.5); }
+  .wait{ color:#ffd54a; text-shadow: 0 0 10px rgba(255,213,74,.85),  0 0 24px rgba(255,213,74,.5); }
+
+  .sum{
+    margin:18px 0;padding:16px;border-radius:16px;
+    background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.2);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    box-shadow:
+      0 10px 32px rgba(0,0,0,.45),
+      inset 0 1px 0 rgba(255,255,255,.28);
+    font-size:15px;
+  }
+  .sum.ok {
+    color:#c9ffe4;
+    border-color: rgba(94,255,200,.45);
+    box-shadow: 0 10px 32px rgba(0,0,0,.45), 0 0 34px rgba(94,255,200,.35), inset 0 1px 0 rgba(255,255,255,.28);
+    text-shadow: 0 0 10px rgba(94,255,200,.55);
+  }
+  .sum.bad{
+    color:#ffd2d2;
+    border-color: rgba(255,122,122,.45);
+    box-shadow: 0 10px 32px rgba(0,0,0,.45), 0 0 34px rgba(255,122,122,.35), inset 0 1px 0 rgba(255,255,255,.28);
+    text-shadow: 0 0 10px rgba(255,122,122,.55);
+  }
+
+  /* ====== دکمه‌های شیشه‌ای حبابی ====== */
+  a.btn, button{
+    position:relative;
+    display:inline-flex;align-items:center;gap:8px;
+    margin:8px 6px 0 0;padding:13px 22px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.35);
+    background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.05));
+    color:#eaf6ff;
+    font:inherit;font-weight:700;text-decoration:none;cursor:pointer;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.5),
+      inset 0 1px 0 rgba(255,255,255,.6),
+      inset 0 -10px 22px rgba(255,255,255,.08);
+    overflow:hidden;
+    transition: transform .18s cubic-bezier(.2,.9,.3,1.2), box-shadow .25s ease;
+    -webkit-tap-highlight-color: transparent;
+    text-shadow: 0 0 8px rgba(77,208,255,.6);
+  }
+  a.btn::before, button::before{
+    content:"";
+    position:absolute; top:5px; left:10%;
+    width:80%; height:38%;
+    background: radial-gradient(closest-side, rgba(255,255,255,.75), rgba(255,255,255,0) 70%);
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    opacity:.75;
+    pointer-events:none;
+    transition: opacity .3s;
+  }
+  a.btn::after, button::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(120,220,255,.75), rgba(120,220,255,0) 55%);
+    opacity:0;
+    transition: opacity .35s ease;
+    pointer-events:none;
+  }
+  a.btn:hover, button:hover{
+    transform: translateY(-2px);
+    box-shadow:
+      0 16px 40px rgba(0,0,0,.55),
+      0 0 34px rgba(77,208,255,.55),
+      0 0 60px rgba(180,122,255,.35),
+      inset 0 1px 0 rgba(255,255,255,.75),
+      inset 0 -10px 24px rgba(255,255,255,.12);
+  }
+  a.btn:active, button:active{
+    transform: translateY(1px) scale(.97);
+    box-shadow:
+      0 4px 14px rgba(0,0,0,.6),
+      0 0 26px rgba(77,208,255,.9),
+      inset 0 2px 10px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  a.btn:active::after, button:active::after{ opacity:1; }
+  a.btn:active::before, button:active::before{ opacity:.35; }
+
+  /* دکمه اصلی — طلایی/فیروزه‌ای نئونی شیشه‌ای */
+  a.btn{
+    background: linear-gradient(135deg, rgba(77,208,255,.75), rgba(180,122,255,.55) 60%, rgba(255,213,74,.35));
+    color:#031018;
+    border-color: rgba(180,220,255,.75);
+    text-shadow: 0 0 8px rgba(255,255,255,.55), 0 1px 0 rgba(255,255,255,.35);
+  }
+  a.btn:hover{
+    box-shadow:
+      0 18px 46px rgba(0,0,0,.55),
+      0 0 42px rgba(77,208,255,.85),
+      0 0 70px rgba(180,122,255,.55),
+      inset 0 1px 0 rgba(255,255,255,.9),
+      inset 0 -12px 26px rgba(255,255,255,.2);
+  }
+
+  iframe{width:1px;height:1px;border:0;position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="grid"></div>
+<div id="mesh"><canvas id="c"></canvas></div>
+
+<div class="w">
+  <div class="brand">
+    <div class="logo">
+      <img src="https://i.ibb.co/Gf0wXcgd/IMG-20261011-052149-617.jpg" alt="FineVPN_v2ray">
+    </div>
+    <h1>عیب‌یابی پنل FineVPN_v2ray</h1>
+  </div>
+  <p class="s">این صفحه داخل مرورگر خودت پنل را تست می‌کند. صبر کن تا تمام شود، بعد از کل صفحه اسکرین‌شات بگیر.</p>
+  <div id="out"></div>
+  <div class="sum" id="sum">در حال تست...</div>
+  <a class="btn" id="go" href="/">رفتن به پنل</a>
+  <button id="again" type="button">تست دوباره</button>
+</div>
+<iframe id="fr" title="test"></iframe>
+
+<script>
+/* ================= شبکه زنده‌ی پس‌زمینه ================= */
+(function(){
+  var cv = document.getElementById('c');
+  if(!cv) return;
+  var ctx = cv.getContext('2d');
+  var pts = [], W=0, H=0, DPR = Math.min(window.devicePixelRatio||1, 2);
+  var LINK = 130;
+  function resize(){
+    W = cv.width  = Math.floor(innerWidth  * DPR);
+    H = cv.height = Math.floor(innerHeight * DPR);
+    cv.style.width  = innerWidth  + 'px';
+    cv.style.height = innerHeight + 'px';
+    var n = Math.max(28, Math.min(70, Math.floor((innerWidth*innerHeight)/22000)));
+    pts = [];
+    for(var i=0;i<n;i++){
+      pts.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        vx: (Math.random()-.5)*0.35*DPR,
+        vy: (Math.random()-.5)*0.35*DPR,
+        r: (Math.random()*1.6 + 0.8)*DPR
+      });
+    }
+  }
+  function step(){
+    ctx.clearRect(0,0,W,H);
+    var i,j,p,q,dx,dy,d;
+    for(i=0;i<pts.length;i++){
+      p = pts[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+    }
+    for(i=0;i<pts.length;i++){
+      for(j=i+1;j<pts.length;j++){
+        p=pts[i]; q=pts[j];
+        dx=p.x-q.x; dy=p.y-q.y;
+        d=Math.sqrt(dx*dx+dy*dy);
+        if(d<LINK*DPR){
+          var a = (1 - d/(LINK*DPR)) * 0.35;
+          ctx.strokeStyle = 'rgba(77,208,255,'+a.toFixed(3)+')';
+          ctx.lineWidth = 1*DPR;
+          ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+        }
+      }
+    }
+    for(i=0;i<pts.length;i++){
+      p=pts[i];
+      var g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*6);
+      g.addColorStop(0,'rgba(180,220,255,.95)');
+      g.addColorStop(0.4,'rgba(77,208,255,.55)');
+      g.addColorStop(1,'rgba(77,208,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(220,240,255,.95)';
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize(); step();
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var out = document.getElementById('out'), sum = document.getElementById('sum');
+  var problems = [];
+  function row(name, cls, val) {
+    var d = document.createElement('div'); d.className = 'r';
+    var a = document.createElement('span'); a.textContent = name;
+    var b = document.createElement('b'); b.className = cls; b.textContent = val;
+    d.appendChild(a); d.appendChild(b); out.appendChild(d); return b;
+  }
+  function ms(t) { return Math.round(performance.now() - t) + ' ms'; }
+  function get(url, opt) {
+    var t = performance.now();
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 25000);
+    opt = opt || {}; opt.cache = 'no-store'; opt.credentials = 'same-origin'; if (ctl) opt.signal = ctl.signal;
+    return fetch(url, opt).then(function (r) {
+      return r.arrayBuffer().then(function (b) { clearTimeout(timer); return { r: r, size: b.byteLength, buf: b, time: ms(t) }; });
+    }, function (e) { clearTimeout(timer); return { r: null, size: 0, err: (e && e.name === 'AbortError') ? 'timeout' : String(e), time: ms(t) }; });
+  }
+  function kb(n) { return n > 2048 ? Math.round(n / 1024) + ' KB' : n + ' B'; }
+  function run() {
+    out.innerHTML = ''; problems = []; sum.className = 'sum'; sum.textContent = 'در حال تست...';
+    row('browser', 'wait', navigator.userAgent.slice(0, 70));
+    get('/jx-status').then(function (s) {
+      var txt = s.buf ? new TextDecoder().decode(s.buf) : '';
+      var bld = (txt.match(/build\s+(\S+)/) || [])[1] || '?';
+      row('server status', s.r && s.r.ok ? 'ok' : 'bad', (s.r ? s.r.status : s.err) + ' | build ' + bld + ' | ' + s.time);
+      if (/FAIL/.test(txt)) problems.push('server');
+      return get('/', { redirect: 'follow' });
+    }).then(function (p) {
+      if (!p.r || !p.r.ok) { row('panel page', 'bad', (p.r ? p.r.status : p.err) + ' | ' + p.time); problems.push('page'); return finish(null); }
+      var url = p.r.url, html = new TextDecoder().decode(p.buf);
+      var base = new URL(url).pathname.replace(/panel\/.*$/, '');
+      document.getElementById('go').href = base;
+      row('panel page', 'ok', '200 | ' + kb(p.size) + ' | ' + p.time);
+      var refs = [], re = /(?:src|href)="([^"]+\.(?:js|css)[^"]*)"/g, m;
+      while ((m = re.exec(html))) refs.push(m[1]);
+      var chain = Promise.resolve();
+      refs.forEach(function (ref) {
+        chain = chain.then(function () {
+          var name = ref.replace(base, '').replace(/\?.*$/, '');
+          var cell = row(name, 'wait', '...');
+          return get(ref).then(function (a) {
+            var good = a.r && a.r.ok && a.size > 0;
+            cell.className = good ? 'ok' : 'bad';
+            cell.textContent = (a.r ? a.r.status : a.err) + ' | ' + kb(a.size) + ' | ' + a.time;
+            if (!good) problems.push(name);
+          });
+        });
+      });
+      return chain.then(function () {
+        return get(base + 'getTwoFactorEnable', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: '' }).then(function (l) {
+          var t = l.buf ? new TextDecoder().decode(l.buf) : '';
+          var good = l.r && l.r.ok && /"success":true/.test(t);
+          row('login api', good ? 'ok' : 'bad', (l.r ? l.r.status : l.err) + ' | ' + l.time);
+          if (!good) problems.push('login api');
+          return finish(base);
+        });
+      });
+    }).catch(function (e) { row('test error', 'bad', String(e)); finish(null); });
+  }
+  function finish(base) {
+    if (!base) return report(false);
+    var cell = row('panel in this browser', 'wait', 'loading...');
+    var fr = document.getElementById('fr'), t0 = performance.now(), done = false;
+    function check() {
+      if (done) return;
+      var w, d;
+      try { w = fr.contentWindow; d = fr.contentDocument; } catch (e) { cell.className = 'bad'; cell.textContent = 'blocked'; done = true; return report(true); }
+      var form = d && d.querySelector && d.querySelector('form, .ant-form, input[type=password], .ant-layout-sider, .ant-layout-content');
+      if (form) { done = true; cell.className = 'ok'; cell.textContent = 'login form shown | ' + ms(t0); return report(true); }
+      if (performance.now() - t0 > 30000) {
+        done = true; cell.className = 'bad';
+        var miss = [];
+        if (w) { ['Vue', 'antd', 'axios', 'moment', 'Qs'].forEach(function (k) { if (typeof w[k] === 'undefined') miss.push(k); }); }
+        cell.textContent = 'blank after 30s' + (miss.length ? ' | missing: ' + miss.join(',') : '') + (w && w.__jxErr ? ' | ' + w.__jxErr : '');
+        problems.push('render');
+        return report(true);
+      }
+      setTimeout(check, 500);
+    }
+    fr.onload = function () {
+      try { fr.contentWindow.addEventListener('error', function (e) { fr.contentWindow.__jxErr = (e.message || 'error') + ' @ ' + String(e.filename || '').split('/').pop(); }, true); } catch (e) {}
+      setTimeout(check, 300);
+    };
+    fr.src = base + '?jxcheck=' + Date.now();
+  }
+  function report() {
+    if (!problems.length) {
+      sum.className = 'sum ok';
+      sum.textContent = 'همه‌چیز در مرورگر تو سالم است. دکمه‌ی «رفتن به پنل» را بزن. اگر باز سفید بود، کش مرورگر را پاک کن.';
+    } else {
+      sum.className = 'sum bad';
+      sum.textContent = 'مشکل در: ' + problems.join('، ') + ' | از همین صفحه اسکرین‌شات بفرست.';
+    }
+  }
+  /* ===== افکت کلیک روی دکمه‌ها ===== */
+  document.addEventListener('pointerdown', function (e) {
+    var el = e.target.closest && e.target.closest('a.btn, button');
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    el.style.setProperty('--x', ((e.clientX - r.left) / r.width * 100) + '%');
+    el.style.setProperty('--y', ((e.clientY - r.top) / r.height * 100) + '%');
+  }, { passive: true });
+  document.getElementById('again').onclick = run;
+  run();
+})();
+</script>
+</body>
+</html>
